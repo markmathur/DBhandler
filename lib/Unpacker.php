@@ -21,6 +21,7 @@ class Unpacker {
 
     if($this->incDataIsOf_StorePostClass($incData)) {
       // Creating a new post
+      echo 'Counted as storepost.';
       $xtractor->extractColumns($incData);
       $xtractor->extractValues($incData);
       $xtractor->extractPostDataAsArray($incData);
@@ -35,11 +36,15 @@ class Unpacker {
     else if($this->itIsAnId($incData)) {
       // Reading or deleting a post
       $xtractor->setIdColumnNameAndValue($incData);
+      
+    }
+    else if($this->itIsAsearchWithMultipleCiteria($incData)){
+      $xtractor->extractColumns($incData);
+      $xtractor->extractValues($incData);
+      $xtractor->extractPostDataAsArray($incData);
     }
       
   }
-
-
 
   private function incDataIsOf_StorePostClass($incData) {
     return get_class($incData) == STR::INCNAMESPACE."StorePost";
@@ -51,6 +56,10 @@ class Unpacker {
 
   private function itIsAnId($incData) {
     return isset($incData->{$this->dbh::ARRAYWITHID});
+  }
+
+  private function itIsAsearchWithMultipleCiteria($incData) {
+    return get_class($incData) == STR::INCNAMESPACE."GetPostsByCriteria"; 
   }
 
   public static function takeAwayTrailingComa(&$str) {

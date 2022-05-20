@@ -8,6 +8,7 @@ ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
 
 // mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+mysqli_report(MYSQLI_REPORT_STRICT);
 
 
 use DBhandler\DeletePostWithId;
@@ -61,7 +62,6 @@ class DBhandler {
   // *** PUBLIC METHODS ***
   function storePost(StorePost $dbParametersAndPostData): bool {
     try {
-      mysqli_report(MYSQLI_REPORT_ALL);
       $dbConn = $this->unpackDataAndOpenDBconnection($dbParametersAndPostData);
       $success = $this->stmtHandler->storePost($dbConn, $this->postData);
     }
@@ -87,8 +87,7 @@ class DBhandler {
 
     // Returns an array of assoc. arrays. Every assoc. array is a post.
     $dbConn = $this->unpackDataAndOpenDBconnection($dbParametersAndId);
-    $result = $this->stmtHandler->getPostsByCriteria($dbConn);
-    
+    $result = $this->stmtHandler->getPostsByCriteria($dbConn, $this->postData);
     return $this->handleResultOfSELECTdbCalls($result);
   }
 

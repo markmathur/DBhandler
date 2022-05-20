@@ -16,7 +16,7 @@ class StmtHandler {
 
   // *** MAIN METHODS ***
   public function storePost(\mysqli $dbConn, array $postData) {
-
+    
     $preparedStatement = $this->makePreparedStatementForStorePost($postData);
     $stmt = $dbConn->prepare($preparedStatement);
     $this->bindParameters($stmt, $postData);
@@ -26,6 +26,22 @@ class StmtHandler {
     $dbConn->close();
 
     return $success;
+  }
+
+  public function getPostsByCriteria($dbConn, array $postData) {
+    
+    $preparedStatement = $this->makePreparedStatementForGetPostsByCrit($postData);
+    $stmt = $dbConn->prepare($preparedStatement); 
+    $this->bindParameters($stmt, $postData);
+    
+    $stmt->execute();
+    
+    $postAsArray = $stmt->get_result()->fetch_all(MYSQLI_ASSOC); // returns null if no matches.
+    
+    $stmt->close();
+    $dbConn->close();
+
+    return $postAsArray;
   }
 
   public function getPostWithId($dbConn) {
@@ -44,20 +60,6 @@ class StmtHandler {
   }
 
 
-
-  public function getPostsByCriteria($dbConn) {
-    
-    $stmt = $dbConn->prepare("SELECT * FROM {$this->dbh->getTable()} WHERE {$this->dbh->getIncomingCritColumn()} = ?");
-    $crit = '';
-    $stmt->bind_param("s", $crit);
-    $crit = $this->dbh->getIncomingCritValue();
-    $stmt->execute();
-    $postAsArray = $stmt->get_result()->fetch_all(MYSQLI_ASSOC); // returns null if no matches.
-    $stmt->close();
-    $dbConn->close();
-
-    return $postAsArray;
-  }
 
 
   public function updatePost(\mysqli $dbConn, array $postData) {
@@ -105,6 +107,20 @@ class StmtHandler {
   public function makePreparedStatementForStorePost(array $postData) {
     $rowOfQmarks = $this->getStringOfQmarks(sizeof($postData));
     $str = "INSERT INTO {$this->dbh->getTable()} ({$this->dbh->getStringOfColumns()}) VALUES ($rowOfQmarks);";
+
+    return $str;
+  }
+
+  public function makePreparedStatementForGetPostsByCrit(array $postData) {
+    // $rowOfQmarks = $this->getStringOfQmarks(sizeof($postData));
+    $strOfConditions = "";
+
+    foreach($postData as $key => $val) {
+      $strOfConditions .= "{$key} = ? AND ";
+    }
+
+    $strOfConditions = rtrim($strOfConditions, " AND");    
+    $str = "SELECT * FROM {$this->dbh->getTable()} WHERE ({$strOfConditions});";
 
     return $str;
   }

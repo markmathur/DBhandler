@@ -2,7 +2,9 @@
 
 namespace DBhandler;
 
-class GetPostsByCriteria extends Mother_targetPostWithOneCriteria {
+require './DBhandler/incomingDataClasses/StorePost.php';
+
+class GetPostsByCriteria extends StorePost {
   // public function __construct(string $db, string $tbl, array $arrCrit)
   // {
   //   $this->{DBhandler::DATABASE} = $db;
