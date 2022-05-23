@@ -21,7 +21,6 @@ class Unpacker {
 
     if($this->incDataIsOf_StorePostClass($incData)) {
       // Creating a new post
-      echo 'Counted as storepost.';
       $xtractor->extractColumns($incData);
       $xtractor->extractValues($incData);
       $xtractor->extractPostDataAsArray($incData);

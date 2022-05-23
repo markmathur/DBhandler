@@ -72,14 +72,15 @@ class DBhandler {
     return $success; // Returns true or false.
   }
 
-  function getPostWithId(GetPostWithId $dbParametersAndId): ?array {
-    // Returns 1-level array with user properties as array items.
-    // Or null;
-    $dbConn = $this->unpackDataAndOpenDBconnection($dbParametersAndId);
-    $result = $this->stmtHandler->getPostWithId($dbConn);
+  // DEPRACATED - use getPostsByCriteria instead. 
+  // function getPostWithId(GetPostWithId $dbParametersAndId): ?array {
+  //   // Returns 1-level array with user properties as array items.
+  //   // Or null;
+  //   $dbConn = $this->unpackDataAndOpenDBconnection($dbParametersAndId);
+  //   $result = $this->stmtHandler->getPostWithId($dbConn);
 
-    return $this->handleResultOfSELECTdbCalls($result);
-  }
+  //   return $this->handleResultOfSELECTdbCalls($result);
+  // }
 
   function getPostsByCriteria(GetPostsByCriteria $dbParametersAndId): ?array {
     // This should not replace getPostWithId because getting with id

@@ -44,20 +44,21 @@ class StmtHandler {
     return $postAsArray;
   }
 
-  public function getPostWithId($dbConn) {
+  // ** Deprecated - use getPostsByCriteria instead. **
+  // public function getPostWithId($dbConn) {
     
-    $stmt = $dbConn->prepare("SELECT * FROM {$this->dbh->getTable()} WHERE {$this->dbh->getIncomingCritColumn()} = ?");
-    $id='';
-    $stmt->bind_param("s", $id);
-    $id = $this->dbh->getIncomingCritValue();
-    $stmt->execute();
-    $arrayOfPostsWithOnePost = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-    $thePost = $arrayOfPostsWithOnePost[0] ?? array(); // This line picks the user array out of an array that presumes many users. 
-    $stmt->close();
-    $dbConn->close();
+  //   $stmt = $dbConn->prepare("SELECT * FROM {$this->dbh->getTable()} WHERE {$this->dbh->getIncomingCritColumn()} = ?");
+  //   $id='';
+  //   $stmt->bind_param("s", $id);
+  //   $id = $this->dbh->getIncomingCritValue();
+  //   $stmt->execute();
+  //   $arrayOfPostsWithOnePost = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+  //   $thePost = $arrayOfPostsWithOnePost[0] ?? array(); // This line picks the user array out of an array that presumes many users. 
+  //   $stmt->close();
+  //   $dbConn->close();
 
-    return $thePost;
-  }
+  //   return $thePost;
+  // }
 
 
 
