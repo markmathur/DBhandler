@@ -40,6 +40,8 @@ class DBhandler {
 
   // PROPERTIES
 
+  private $stmtHandler; 
+
   private string $incomingCriteriaColumn;
   private string $incomingCriteriaValue;
   private array $incomingUpdateDataAsArray; // This is used by updatePost(). It might be possible to switch it out for $stringOfColumns and $stringOfValues.
