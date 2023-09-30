@@ -29,19 +29,24 @@ class StmtHandler {
   }
 
   public function getPostsByCriteria($dbConn, array $postData) {
-    
-    $preparedStatement = $this->makePreparedStatementForGetPostsByCrit($postData);
-    $stmt = $dbConn->prepare($preparedStatement); 
-    $this->bindParameters($stmt, $postData);
-    
-    $stmt->execute();
-    
-    $postAsArray = $stmt->get_result()->fetch_all(MYSQLI_ASSOC); // returns null if no matches.
-    
-    $stmt->close();
-    $dbConn->close();
+    try {
+      $preparedStatement = $this->makePreparedStatementForGetPostsByCrit($postData);
+      $stmt = $dbConn->prepare($preparedStatement); 
+      
+      $this->bindParameters($stmt, $postData);
+      
+      $stmt->execute();
+      
+      $postAsArray = $stmt->get_result()->fetch_all(MYSQLI_ASSOC); // returns null if no matches.
+      
+      $stmt->close();
+      $dbConn->close();
 
-    return $postAsArray;
+      return $postAsArray;
+    }
+    catch(\Exception $e) {
+      throw $e;
+    }
   }
 
   // ** Deprecated - use getPostsByCriteria instead. **
