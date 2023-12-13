@@ -102,6 +102,8 @@ class DBhandler {
     return $success; // Returns true or false;
   }
 
+  // Posts should not be deleted with any other identification than id, as 
+  // that is the only guaranteed unique property.
   function deletePostWithId(DeletePostWithId  $dbParametersAndId): ?int {
     $dbConn = $this->unpackDataAndOpenDBconnection($dbParametersAndId);
     $result = $this->stmtHandler->deletePostWithId($dbConn);
