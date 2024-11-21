@@ -193,7 +193,9 @@ class DBhandler {
   function setTable(string $tableName) {$this->table = $tableName;}
   function getTable() {return $this->table;}
 
-  function setIncomingCritColumn(string $col) {$this->incomingCriteriaColumn = $col;}
+  function setIncomingCritColumn(string $col) {
+    $this->incomingCriteriaColumn = $col . \ENV::dbColSuffix; // This adds the encyption suffix to the column name.
+  }
   function getIncomingCritColumn() {return $this->incomingCriteriaColumn;}
 
   function setIncomingCritValue(string $val) {$this->incomingCriteriaValue = $val;}
@@ -203,7 +205,9 @@ class DBhandler {
   function getIncomingUpdateDataAsArray() {return $this->incomingUpdateDataAsArray;}
 
   function setStringOfColumns(string $soc) {$this->stringOfColumns = $soc;}
-  function getStringOfColumns() {return $this->stringOfColumns;}
+  function getStringOfColumns() {
+    return $this->stringOfColumns;
+  }
 
   function setStringOfValues( string $sov) {$this->stringOfValues = $sov;}
   function getStringOfValues() {return $this->stringOfValues; }

@@ -4,6 +4,7 @@ namespace DBhandler;
 
 use mysqli_stmt;
 use PhpParser\Node\Stmt;
+use ENV;
 
 class StmtHandler {
 
@@ -16,6 +17,8 @@ class StmtHandler {
 
   // *** MAIN METHODS ***
   public function storePost(\mysqli $dbConn, array $postData) {
+
+    $this->encryptArrayKeys($postData);
     
     $preparedStatement = $this->makePreparedStatementForStorePost($postData);
     $stmt = $dbConn->prepare($preparedStatement);
@@ -30,14 +33,17 @@ class StmtHandler {
 
   public function getPostsByCriteria($dbConn, array $postData) {
     try {
+
+      $this->encryptArrayKeys($postData);
+
       $preparedStatement = $this->makePreparedStatementForGetPostsByCrit($postData);
       $stmt = $dbConn->prepare($preparedStatement); 
-      
       $this->bindParameters($stmt, $postData);
       
       $stmt->execute();
-      
       $postAsArray = $stmt->get_result()->fetch_all(MYSQLI_ASSOC); // returns null if no matches.
+
+      $this->decryptArrayKeys($postAsArray);
       
       $stmt->close();
       $dbConn->close();
@@ -47,6 +53,43 @@ class StmtHandler {
     catch(\Exception $e) {
       throw $e;
     }
+  }
+
+  private function encryptArrayKeys(&$postData):void {
+      $encryptedPostData = array();
+
+      foreach($postData as $key => $val) {
+        $encryptedPostData[$key .= \ENV::dbColSuffix] = $val;
+      }
+
+      $postData = $encryptedPostData;
+  }
+
+  private function decryptArrayKeys(&$postAsArray):void {
+    if(sizeof($postAsArray ?? array()) > 0){
+      $decryptedPostAsArray = array();
+
+      foreach($postAsArray as $post) {
+        $decryptedPost = array();
+        foreach($post as $colName => $val){
+          // Här är något fel tror jag. Endast första posten blir av med suffixet.
+          $decryptedPost[rtrim($colName, \ENV::dbColSuffix)] = $val  ;
+        }
+        array_push($decryptedPostAsArray, $decryptedPost);
+      }
+
+      $postAsArray = $decryptedPostAsArray;
+    }
+  }
+
+  private function encryptArrayValues(&$arr) {
+    $encryptedArray = array();
+
+    foreach($arr as $key => $val) {
+      $encryptedArray[$key] = $val .= \ENV::dbColSuffix;
+    }
+
+    $arr = $encryptedArray;
   }
 
   // ** Deprecated - use getPostsByCriteria instead. **
@@ -69,6 +112,8 @@ class StmtHandler {
 
 
   public function updatePost(\mysqli $dbConn, array $postData) {
+
+    $this->encryptArrayKeys($postData);
 
     $preparedStatement = $this->makePreparedStatementForUpdatePost($postData);
     $stmt = $dbConn->prepare($preparedStatement);
@@ -112,7 +157,10 @@ class StmtHandler {
   
   public function makePreparedStatementForStorePost(array $postData) {
     $rowOfQmarks = $this->getStringOfQmarks(sizeof($postData));
-    $str = "INSERT INTO {$this->dbh->getTable()} ({$this->dbh->getStringOfColumns()}) VALUES ($rowOfQmarks);";
+    $arrayOfColumns = explode(", ", $this->dbh->getStringOfColumns());
+    $this->encryptArrayValues($arrayOfColumns);
+    $encryptedStringOfColumns = implode(', ', $arrayOfColumns);
+    $str = "INSERT INTO {$this->dbh->getTable()} ({$encryptedStringOfColumns}) VALUES ($rowOfQmarks);";
 
     return $str;
   }
@@ -122,6 +170,7 @@ class StmtHandler {
     $strOfConditions = "";
 
     foreach($postData as $key => $val) {
+      // $key = $this->addEncryptingSuffixToKey($key);
       $strOfConditions .= "{$key} = ? AND ";
     }
 
@@ -185,6 +234,10 @@ class StmtHandler {
 
   private static function takeAwayTrailingComa(&$str) {
     $str = rtrim($str, ", ");
+  }
+
+  private function addEncryptingSuffixToKey($key) {
+    return $key .= ENV::dbColSuffix;
   }
 
 }
