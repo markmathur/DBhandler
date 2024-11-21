@@ -70,11 +70,13 @@ class StmtHandler {
       $decryptedPostAsArray = array();
 
       foreach($postAsArray as $post) {
+
         $decryptedPost = array();
+
         foreach($post as $colName => $val){
-          // Här är något fel tror jag. Endast första posten blir av med suffixet.
           $decryptedPost[rtrim($colName, \ENV::dbColSuffix)] = $val  ;
         }
+
         array_push($decryptedPostAsArray, $decryptedPost);
       }
 
@@ -234,10 +236,6 @@ class StmtHandler {
 
   private static function takeAwayTrailingComa(&$str) {
     $str = rtrim($str, ", ");
-  }
-
-  private function addEncryptingSuffixToKey($key) {
-    return $key .= ENV::dbColSuffix;
   }
 
 }
