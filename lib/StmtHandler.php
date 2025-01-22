@@ -210,7 +210,8 @@ class StmtHandler {
     $str = '';
 
     foreach($postData as $col => $val) {
-      $str .= substr(gettype($val), 0, 1);
+      // MySQL cant handle the null type, so null values are taken as integers. 
+      $str .= is_null($val) ? "i" : substr(gettype($val), 0, 1);
     }
 
     return $str;
